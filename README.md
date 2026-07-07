@@ -117,19 +117,6 @@ python app.py
 
 ---
 
-# ☁️ Deploying on Hugging Face Spaces
-
-1. Create a **Gradio Space**
-2. Upload the project files
-3. Add the following Secret
-
-```
-GROQ_API_KEY
-```
-
-4. Hugging Face installs the dependencies automatically from `requirements.txt`.
-
----
 
 # 🧪 Tested Scenarios
 
