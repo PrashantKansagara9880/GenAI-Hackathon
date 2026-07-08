@@ -1,37 +1,82 @@
 # 👁️ HybridSight
 
-> A multimodal AI assistant that combines Retrieval-Augmented Generation (RAG), Web Search, and Vision into a single application through a custom reasoning agent.
+> **One Agent. Three Sources. One Answer.**
 
-HybridSight is a lightweight GenAI application capable of answering questions from uploaded documents, uploaded images, and the web. Instead of relying on a fixed pipeline, it uses a custom-built reasoning agent that dynamically decides which tool(s) should be used for every query while exposing its reasoning process to the user.
+HybridSight is a multimodal AI assistant developed for **PS5 – Multimodal Q&A Pro** in the **MSTC GenAI Summer of Code 2026 Hackathon**.
+
+It unifies **Retrieval-Augmented Generation (RAG)**, **Vision Understanding**, and **Live Web Search** behind a **custom reasoning agent** that automatically decides which tool(s) should answer a user's query. Instead of exposing isolated AI capabilities, HybridSight provides a single conversational interface capable of reasoning across multiple information sources while remaining transparent through a reasoning trace.
 
 ---
 
-## ✨ Features
+# 🌐 Live Demo
 
-### 💬 Hybrid Chat
-- Free-form conversational interface
-- Dynamic tool selection using a custom reasoning agent
-- Supports document retrieval, web search, and image understanding
-- Multi-tool reasoning for complex queries
-- Collapsible reasoning trace for every response
+**Hugging Face Space**
 
-### 📄 Document QA
-- PDF upload and indexing into ChromaDB
-- Semantic retrieval using sentence embeddings
-- Multi-turn document conversations
+> https://YOUR_SPACE_URL
+
+---
+
+# 💻 GitHub Repository
+
+> https://github.com/YOUR_USERNAME/YOUR_REPOSITORY
+
+---
+
+# 📌 Problem Statement
+
+**PS5 – Multimodal Q&A Pro**
+
+Modern AI assistants are often specialized for only one modality—they can either search uploaded documents, analyze images, or retrieve information from the web.
+
+The challenge is to build **one intelligent assistant** capable of:
+
+- Answering questions from uploaded PDF documents
+- Understanding uploaded images
+- Searching the live web
+- Automatically selecting the appropriate tool(s)
+- Displaying a transparent reasoning trace
+- Deploying as a live web application
+
+HybridSight addresses this by integrating all three capabilities under a single custom reasoning agent.
+
+---
+
+# ✨ Features
+
+## 💬 Hybrid Chat
+
+- Custom reasoning agent
+- Automatic tool selection
+- Multi-tool reasoning
+- Web Search + RAG + Vision
+- Collapsible reasoning trace
+- Graceful error handling
+
+---
+
+## 📄 Document QA
+
+- PDF upload
+- ChromaDB indexing
+- Semantic retrieval
+- Multi-turn conversations
 - Streaming responses
 - Source-aware answers
 
-### 🖼️ Image Studio
-- Image upload with adjustable resolution
+---
+
+## 🖼️ Image Studio
+
+- Image upload
+- Adjustable image resolution
+- Metadata preview
 - Vision-based question answering
-- Image metadata preview
 - Token-aware image preprocessing
-- Automatic validation before sending images to the Vision model
+- Automatic image validation
 
 ---
 
-# 🏗️ Architecture
+# 🏗️ System Architecture
 
 ```
                      User
@@ -58,9 +103,11 @@ HybridSight is a lightweight GenAI application capable of answering questions fr
 
 | Component | Technology |
 |------------|------------|
+| Language | Python |
+| UI | Gradio |
+| Reasoning | Custom Planner Agent |
 | LLM | Llama 3.3 70B (Groq) |
-| Vision Model | Llama 4 Scout Vision |
-| Framework | Gradio |
+| Vision | Llama 4 Scout Vision |
 | Retrieval | LangChain |
 | Vector Database | ChromaDB |
 | Embeddings | all-MiniLM-L6-v2 |
@@ -72,7 +119,7 @@ HybridSight is a lightweight GenAI application capable of answering questions fr
 # 📂 Project Structure
 
 ```
-HybridSight
+HybridSight/
 │
 ├── app.py
 ├── agent.py
@@ -91,25 +138,26 @@ HybridSight
 
 # 🚀 Running Locally
 
-Clone the repository
+## 1. Clone the repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
+cd HybridSight
 ```
 
-Install dependencies
+## 2. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Create a `.env` file
+## 3. Create a `.env` file
 
-```
+```env
 GROQ_API_KEY=YOUR_API_KEY
 ```
 
-Run the application
+## 4. Launch
 
 ```bash
 python app.py
@@ -117,34 +165,33 @@ python app.py
 
 ---
 
-
 # 🧪 Tested Scenarios
 
-✅ Pure document questions
+✔ Pure document retrieval
 
-✅ Pure web-search questions
+✔ Pure web search
 
-✅ Pure image questions
+✔ Pure image understanding
 
-✅ Image + document reasoning
+✔ Image + Document reasoning
 
-✅ Graceful handling of API failures
+✔ Graceful API failure handling
 
-✅ Missing document handling
+✔ Missing document handling
 
-✅ Missing image handling
+✔ Missing image handling
 
-✅ Session-specific document retrieval
+✔ Session-isolated document retrieval
+
+✔ Progressive document indexing
 
 ---
 
-# 💡 Engineering Decisions
+# 🏗️ Design Decisions
 
-## Custom Reasoning Agent
+## 1. Custom Reasoning Agent
 
-Instead of relying on a fixed workflow, HybridSight implements its own reasoning loop.
-
-The agent repeatedly:
+Rather than relying entirely on a prebuilt ReAct implementation, HybridSight uses a lightweight custom reasoning loop.
 
 ```
 Question
@@ -160,30 +207,26 @@ Planner
 Final Answer
 ```
 
-This provides full control over:
+This provides complete control over:
 
-- tool routing
-- stopping conditions
-- reasoning traces
-- memory
-- runtime behaviour
-- tool-specific execution
-
-It also makes it straightforward to add new tools without changing the overall architecture.
+- Tool routing
+- Planning logic
+- Stopping conditions
+- Memory
+- Reasoning traces
+- Future extensibility
 
 ---
 
-## Runtime Image Placeholder
+## 2. Runtime Image Placeholder
 
-A common challenge with multimodal agents is handling image data efficiently.
-
-Instead of sending the complete Base64 image to the planner model, the planner reasons only with a lightweight placeholder:
+Instead of passing an entire Base64 image through the planner, the planner reasons using only
 
 ```
 CURRENT_IMAGE
 ```
 
-During execution, the runtime replaces this placeholder with the actual image before invoking the vision tool.
+During execution the runtime replaces this placeholder with the actual encoded image before invoking the Vision model.
 
 ```
 Planner
@@ -195,127 +238,115 @@ Runtime
 Vision Tool
 ```
 
-This approach:
+### Benefits
 
-- reduces prompt size
-- lowers token usage
-- avoids unnecessary serialization
-- keeps reasoning independent of image size
-- prevents duplicate image processing
+- Smaller prompts
+- Lower token usage
+- Faster planning
+- Cleaner reasoning
+- No duplicate image serialization
 
 ---
 
-## Token-Aware Vision Pipeline
+## 3. Token-Aware Vision Pipeline
 
-The resolution slider is not merely a UI feature.
+The resolution slider is an engineering optimization rather than a UI enhancement.
 
-Large images generate significantly larger Base64 payloads, increasing latency, token consumption, and the likelihood of request failures.
+Large images generate significantly larger Base64 payloads, increasing:
 
-Before an image reaches the Vision model, HybridSight performs:
+- latency
+- token consumption
+- network transfer
+- memory usage
+- request failure probability
+
+Each uploaded image therefore passes through
 
 ```
 Upload
-    │
+   │
 Resize
-    │
+   │
 JPEG Compression
-    │
+   │
 Token Estimation
-    │
+   │
 Metadata Generation
-    │
+   │
 Validation
-    │
+   │
 Vision Model
 ```
 
-Only images that satisfy the configured token threshold are analyzed.
-
-This protects the application from oversized requests while improving responsiveness.
+Only images satisfying the configured threshold are analyzed.
 
 ---
 
-## Dedicated Document QA
+## 4. Dedicated Document QA
 
-Hybrid Chat and Document QA serve different purposes.
+Hybrid Chat focuses on multimodal reasoning.
 
-Hybrid Chat focuses on open-ended multimodal reasoning.
-
-```
-Question
-      │
- Agent
-      │
- Multiple Tools
-      │
- Answer
-```
-
-Document QA is optimized specifically for retrieval.
+Document QA is optimized solely for retrieval.
 
 ```
 PDF
-   │
-Embedding
-   │
+ │
+Embeddings
+ │
 ChromaDB
-   │
+ │
 Retriever
-   │
+ │
 LLM
 ```
 
-Separating these workflows keeps document conversations faster, source-grounded, and free from unnecessary planner overhead.
+Separating these workflows keeps retrieval grounded, efficient, and free from unnecessary planning overhead.
 
 ---
 
-## Session Isolation
+## 5. Session Isolation
 
-Each user receives an independent ChromaDB collection.
+Every user receives an independent ChromaDB collection.
 
 ```
 collection_name = session_id
 ```
 
-This ensures uploaded documents remain isolated between users and prevents retrieval across sessions.
+This prevents retrieval across user sessions and keeps uploaded documents isolated.
 
 ---
 
-## Reasoning Trace
+## 6. Transparent Reasoning Trace
 
-Every tool invocation is recorded and displayed.
+Every reasoning step records:
 
-For each reasoning step, the application exposes:
+- Selected tool
+- Tool input
+- Tool output
 
-- selected tool
-- tool input
-- tool output
-
-This makes the decision-making process transparent and simplifies debugging.
+This makes tool selection transparent and greatly simplifies debugging.
 
 ---
 
-## Unified Safety Layer
+## 7. Unified Safety Layer
 
-External dependencies are wrapped with a unified safety decorator.
+A dedicated safety decorator wraps external API calls and gracefully handles failures including:
 
-Instead of terminating the application, common failures are handled gracefully, including:
+- Rate limits
+- Invalid API keys
+- Network failures
+- Timeout errors
+- Missing files
+- Invalid tool requests
+- JSON parsing errors
 
-- rate limits
-- invalid API keys
-- network errors
-- JSON parsing failures
-- timeout errors
-- missing files
-- invalid tool requests
-
-This keeps the UI responsive even when external services fail.
+The application continues running instead of crashing.
 
 ---
 
-## Progressive Document Indexing
+## 8. Progressive Document Indexing
 
-Document indexing provides real-time progress updates.
+Document indexing provides live progress updates throughout the pipeline.
 
 ```
 Loading PDF
@@ -331,19 +362,44 @@ Writing ChromaDB
 Completed
 ```
 
-This improves user feedback, especially for larger documents.
+This improves user experience during large document uploads.
+
+---
+
+# 📚 Dataset References
+
+HybridSight does not rely on a fixed dataset.
+
+Instead it operates on:
+
+- User-uploaded PDF documents
+- User-uploaded images
+- Live DuckDuckGo Search results
+
+Embeddings are generated at runtime using **all-MiniLM-L6-v2**.
+
+---
+
+# 🚀 Deployment
+
+HybridSight is designed for deployment on **Hugging Face Spaces**.
+
+API credentials are securely managed using **Hugging Face Repository Secrets**, ensuring no sensitive keys are stored in source code.
 
 ---
 
 # 🔮 Future Improvements
 
 - Multi-document collections
-- OCR support for scanned PDFs
+- OCR for scanned PDFs
 - Citation highlighting
 - Streaming reasoning traces
+- Parallel tool execution
 - Persistent cloud memory
 - Additional knowledge tools (Wikipedia, ArXiv, etc.)
-- Parallel tool execution
 
 ---
 
+# 📄 License
+
+This project was developed for educational and hackathon purposes under the **MSTC GenAI Summer of Code 2026**.
