@@ -16,11 +16,6 @@ It unifies **Retrieval-Augmented Generation (RAG)**, **Vision Understanding**, a
 
 ---
 
-# 💻 GitHub Repository
-
-> https://github.com/PrashantKansagara9880/GenAI-Hackathon
-
----
 
 # 📌 Problem Statement
 
