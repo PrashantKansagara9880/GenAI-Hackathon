@@ -15,7 +15,11 @@ It unifies **Retrieval-Augmented Generation (RAG)**, **Vision Understanding**, a
 > https://huggingface.co/spaces/PrashantKansagara9880/GenAI-Hackathon
 
 ---
+## 🎥 Demo Video
 
+The complete project demonstration is available here:
+
+[▶️ Watch Demo](demo/demo_video.mp4)
 
 # 📌 Problem Statement
 
