@@ -12,13 +12,13 @@ It unifies **Retrieval-Augmented Generation (RAG)**, **Vision Understanding**, a
 
 **Hugging Face Space**
 
-> https://YOUR_SPACE_URL
+> https://huggingface.co/spaces/PrashantKansagara9880/GenAI-Hackathon
 
 ---
 
 # 💻 GitHub Repository
 
-> https://github.com/YOUR_USERNAME/YOUR_REPOSITORY
+> https://github.com/PrashantKansagara9880/GenAI-Hackathon
 
 ---
 
@@ -141,7 +141,7 @@ HybridSight/
 ## 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
+git clone https://github.com/PrashantKansagara9880/GenAI-Hackathon
 cd HybridSight
 ```
 
@@ -400,6 +400,3 @@ API credentials are securely managed using **Hugging Face Repository Secrets**, 
 
 ---
 
-# 📄 License
-
-This project was developed for educational and hackathon purposes under the **MSTC GenAI Summer of Code 2026**.
