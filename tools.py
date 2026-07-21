@@ -1,14 +1,16 @@
 from langchain_core.tools import tool
-from langchain_community.tools import DuckDuckGoSearchRun, WikipediaQueryRun
-from langchain_community.utilities import WikipediaAPIWrapper
+from langchain_community.tools import DuckDuckGoSearchRun
+from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
 import datetime
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
-from groq import Groq
+import base64
 import os
 from dotenv import load_dotenv
+from google import genai
+from google.genai import types
 load_dotenv()
-client=Groq(api_key=os.getenv("GROQ_API_KEY"))
+client=genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 embeding_model=HuggingFaceEmbeddings(
     model_name="all-MiniLM-L6-v2",
@@ -55,7 +57,10 @@ def web_search(query: str)-> str:
 
 @tool
 def search_documents(user_string,session_id):
-
+    """
+    Search the user's uploaded documents using semantic retrieval.
+    Returns the most relevant document chunks.
+    """
     print(f"search_documents tool used with: {user_string}")
     """Search the user's uploaded documents for information relevent to the query.Use this when the 
     user asks about content from a PDF they uploaded, or references 'the document', 'my notes',
@@ -92,18 +97,19 @@ def describe_image(image_data: str) -> str:
     image or asks what's in a picture. Input must be a base64 data URI
     (e.g. 'data:image/jpeg;base64,...')."""
     print(f"describe_image tool used with: {image_data}")
+    image_bytes = base64.b64decode(image_data.split(",")[1])
     try:
-        response = client.chat.completions.create(
-            model="meta-llama/llama-4-scout-17b-16e-instruct",
-            messages=[{
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": "Describe this image in detail."},
-                    {"type": "image_url", "image_url": {"url": image_data}},
-                ],
-            }],
-        )
-        return response.choices[0].message.content
+        response = client.models.generate_content(
+        model="models/gemini-3.5-flash",
+        contents=[
+            "Describe this image in detail.",
+            types.Part.from_bytes(
+                data=image_bytes,
+                mime_type="image/jpeg",
+            )
+        ]
+    )
+        return response.text
     except Exception as e:
         return f"Could not process the image: {e}"
 

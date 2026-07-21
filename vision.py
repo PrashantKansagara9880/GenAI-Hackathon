@@ -2,12 +2,13 @@ from PIL import Image
 import io
 import base64
 import os
-from groq import Groq
+from google import genai
+from google.genai import types
 from dotenv import load_dotenv
 
 from safety import safe_call
 load_dotenv()
-client=Groq(api_key=os.getenv("GROQ_API_KEY"))
+client=genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 def image_to_data_uri(filepath:str,scale_percent: int = 100,jpeg_quality: int = 85):
     img = Image.open(filepath).convert("RGB")
@@ -67,24 +68,16 @@ def ask_vision(image_uri, image_ready,question="Describe the image in detail, in
             "Please reduce the image resolution using the slider "
             "and click 'Process Image' again."
         )
-    response = client.chat.completions.create(
-    model="meta-llama/llama-4-scout-17b-16e-instruct",
-    messages=[
-        {
-            "role":"user",
-            "content":[
-                {
-                    "type":"text",
-                    "text":question
-                },
-                {
-                    "type":"image_url",
-                    "image_url":{
-                        "url":image_uri
-                    }
-                }
-            ]
-        }
-    ]
-)
-    return response.choices[0].message.content
+    image_data=image_uri.split(",")[1]
+    image_bytes = base64.b64decode(image_data)
+    response = client.models.generate_content(
+        model="models/gemini-3.5-flash",
+        contents=[
+            question,
+            types.Part.from_bytes(
+                data=image_bytes,
+                mime_type="image/jpeg",
+            )
+        ]
+    )
+    return response.text

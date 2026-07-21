@@ -3,7 +3,7 @@ import json
 import socket
 
 import groq
-
+from google.genai import errors as genai_errors
 from langgraph.errors import GraphRecursionError
 from langchain_core.exceptions import OutputParserException
 
@@ -113,6 +113,25 @@ def safe_call(func):
                 f"⚠️ Missing key: {e}"
             )
 
+        except genai_errors.ClientError as e:
+            status=getattr(e, "status_code", None)
+            if status == 429:
+                return (
+            "⏳ Gemini is currently under high demand.\n"
+            "Please try again in a few moments."
+        )
+            elif status == 404:
+                return "❌ Gemini model not found."
+            elif status == 401:
+                return "🔑 Invalid Gemini API key."
+            return f"❌ Gemini Client Error: {e}"
+        
+        except genai_errors.ServerError as e:
+            return (
+        "⚙️ Gemini servers are temporarily busy.\n"
+        "Please try again shortly."
+    )
+        
         except Exception as e:
             return (
                 f"❌ Unexpected error:\n{type(e).__name__}: {e}"
